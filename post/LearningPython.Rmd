@@ -2,31 +2,24 @@
 title: "Learning Python"
 author: "Abbie Weber"
 date: "`r Sys.Date()`"
-output:
-  html_document:
-    toc: yes
-    toc_depth: '3'
-    df_print: paged
-  html_notebook:
-    devtools::install_github('rstudio/rmarkdown')
 ---
 
 # This is a blog of everything I learned about python in computational biology.
 
-#Python and R can work together!
+## Python and R can work together!
 ```{R}
 library(reticulate)
 
 hi <- "Hello,"
 ```
-#Reticulate allows for R and Python to work together. We will see how below. 
+## Reticulate allows for R and Python to work together. We will see how below. 
 
 ```{python}
 hi = "my name is Abbie!"
 print(r.hi, hi)
 ```
 
-#We can also use python to do simple math.
+# We can also use python to do simple math.
 ```{python}
 3-2
 3**2 #3 squared
@@ -36,7 +29,7 @@ pow(3,2) #3 to the power of 2
 3/2
 ```
 
-#This is how assignment works in python:
+# This is how assignment works in python:
 ```{python}
 eight = 8
 nine = 9
@@ -48,7 +41,7 @@ one
 ten
 ```
 
-#Here is how we can build a sequence:
+# Here is how we can build a sequence:
 ```{python}
 x = list(range(2, 10, 1))
 len(x)
@@ -57,7 +50,7 @@ min(x)
 type(x) #tells us what x is -- it's a list
 ```
 
-#This is how you can index in python:
+# This is how you can index in python:
 ```{python}
 list1 = [6,7,8,9]
 list2 = ['a', 'b', 'b', 'i', 'e']
@@ -66,7 +59,7 @@ list1[3]
 list2[-1] #this asks to give the last element because -0 = 0. SO negative indexes start at 1.
 ```
 
-#Slicing: We are slicing between elements.
+# Slicing: We are slicing between elements.
 ```{python}
 list1 = [6,7,8,9]
 list2 = ['a', 'b', 'b', 'i', 'e']
@@ -81,7 +74,7 @@ list1.insert(4,100)
 list1
 ```
 
-#Other functions:
+# Other functions:
 ```{python}
 list1.append(200) #adds this number to the end
 
@@ -100,7 +93,7 @@ list4
 list4[1] #gives all of list 2
 ```
 
-#In python, arithmetic is not vecotrized by default.
+# In python, arithmetic is not vecotrized by default.
 ```{python}
 for i in list1:
     print(i+1)
@@ -110,7 +103,7 @@ for i in range(len(list1)):
 ```
 
 
-#How to save your output:
+# How to save your output:
 ```{python}
 plus1 = [] #makes empty list
 for i in range(len(list1)):
@@ -118,7 +111,7 @@ for i in range(len(list1)):
 plus1
 ```
 
-#Special functions! Numpy uses arrays:
+# Special functions! Numpy uses arrays:
 ```{python}
 import numpy as np
 
@@ -143,14 +136,16 @@ print(np.dot(iden, mat1)) #how to matrix multiply
 print(iden*mat1) #scalar multiplication
 ```
 
-#How to save output:
+# How to save output:
 ```{python}
 plus1 = [] #makes empty list
 for i in range(len(list1)):
     plus1.append(list1[i]+1)
 plus1
 ```
-#This is just a small list of everything that I have learned how to do in python! Please enjoy this picture of my puppy niece, Molly!
+# This is just a small list of everything that I have learned how to do in python! Please enjoy this picture of my puppy niece, Molly!
 
 
-![](https://edupod.cns.utexas.edu/rstudio/files/website/static/img/molly.jpg)
+
+![](/post/LearningPython_files/molly.jpg)
+
