@@ -5,24 +5,25 @@
     <link>/project/</link>
     <description>Recent content in Projects on Abbie Weber</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-US</language>
-    <lastBuildDate>Tue, 01 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="/project/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-US</language><atom:link href="/project/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Project 1</title>
       <link>/project/project1/</link>
-      <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/project/project1/</guid>
-      <description> Test Project 1  </description>
+      <description>Abigail Weber amw4996
+Introduction One of the data sets I am using in this project is called Texas Child Population by County from 2010-2020. The data frame contains the year, county, region, child population, percent of children in the total population, and the total population. The other data set I selected portrays the number of COVID cases per Texas county from March 4, 2020 until December 30, 2020.</description>
     </item>
     
     <item>
       <title>Project 2</title>
       <link>/project/project2/</link>
-      <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/project/project2/</guid>
-      <description> Test Project 2  </description>
+      <description>Abigail Weber amw4996
+Introduction My data set is looking at heart disease indicators. The hopes for this data set is to look for trends variables such as type of chest pain, blood pressure, and cholesterol levels in order to predict and classify heart attacks. This data was donated by multiple cardiac institutes from Budapest, Zurich, Basel, Long Beach, and Cleveland. The columns in this data set are age, sex, type of chest pain, resting blood pressure, cholesterol, maximum heart rate achieved, resting ecg results, and target value.</description>
     </item>
     
   </channel>

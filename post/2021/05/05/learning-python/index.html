@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Abbie" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../../../../img/favicon.ico">
+    <title>Learning Python</title>
+    <meta name="generator" content="Hugo 0.83.1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../../../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../../../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../../../../post/">BLOG</a></li>
+        
+        <li><a href="../../../../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../../../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../../../../post/2021/05/05/learning-python/">Learning Python</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         May 5, 2021 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="this-is-a-blog-of-everything-i-learned-about-python-in-computational-biology." class="section level1">
+<h1>This is a blog of everything I learned about python in computational biology.</h1>
+<p>#Python and R can work together!</p>
+<pre class="r"><code>library(reticulate)
+
+hi &lt;- &quot;Hello,&quot;</code></pre>
+<p>#Reticulate allows for R and Python to work together. We will see how below.</p>
+<pre class="python"><code>hi = &quot;my name is Abbie!&quot;
+print(r.hi, hi)</code></pre>
+<pre><code>## Hello, my name is Abbie!</code></pre>
+<p>#We can also use python to do simple math.</p>
+<pre class="python"><code>3-2</code></pre>
+<pre><code>## 1</code></pre>
+<pre class="python"><code>3**2 #3 squared</code></pre>
+<pre><code>## 9</code></pre>
+<pre class="python"><code>pow(3,2) #3 to the power of 2</code></pre>
+<pre><code>## 9</code></pre>
+<pre class="python"><code>3//2 #floor division</code></pre>
+<pre><code>## 1</code></pre>
+<pre class="python"><code>3/2</code></pre>
+<pre><code>## 1.5</code></pre>
+<p>#This is how assignment works in python:</p>
+<pre class="python"><code>eight = 8
+nine = 9
+two = 2
+eight*nine
+#multiple assignment works like this:</code></pre>
+<pre><code>## 72</code></pre>
+<pre class="python"><code>one, ten = nine-8, eight+two
+one</code></pre>
+<pre><code>## 1</code></pre>
+<pre class="python"><code>ten</code></pre>
+<pre><code>## 10</code></pre>
+<p>#Here is how we can build a sequence:</p>
+<pre class="python"><code>x = list(range(2, 10, 1))
+len(x)</code></pre>
+<pre><code>## 8</code></pre>
+<pre class="python"><code>max(x)</code></pre>
+<pre><code>## 9</code></pre>
+<pre class="python"><code>min(x)</code></pre>
+<pre><code>## 2</code></pre>
+<pre class="python"><code>type(x) #tells us what x is -- it&#39;s a list</code></pre>
+<pre><code>## &lt;class &#39;list&#39;&gt;</code></pre>
+<p>#This is how you can index in python:</p>
+<pre class="python"><code>list1 = [6,7,8,9]
+list2 = [&#39;a&#39;, &#39;b&#39;, &#39;b&#39;, &#39;i&#39;, &#39;e&#39;]
+list2[1] #python recognizes the 0th position. So, in list2, the first position is b and the 0th position is a.</code></pre>
+<pre><code>## &#39;b&#39;</code></pre>
+<pre class="python"><code>list1[3]</code></pre>
+<pre><code>## 9</code></pre>
+<pre class="python"><code>list2[-1] #this asks to give the last element because -0 = 0. SO negative indexes start at 1.</code></pre>
+<pre><code>## &#39;e&#39;</code></pre>
+<p>#Slicing: We are slicing between elements.</p>
+<pre class="python"><code>list1 = [6,7,8,9]
+list2 = [&#39;a&#39;, &#39;b&#39;, &#39;b&#39;, &#39;i&#39;, &#39;e&#39;]
+
+list2[1:] #gives elements after index 1</code></pre>
+<pre><code>## [&#39;b&#39;, &#39;b&#39;, &#39;i&#39;, &#39;e&#39;]</code></pre>
+<pre class="python"><code>list2[1:4] #elements from index 1 to and not including 4</code></pre>
+<pre><code>## [&#39;b&#39;, &#39;b&#39;, &#39;i&#39;]</code></pre>
+<pre class="python"><code>list2[-3:] #lists third from end to the end</code></pre>
+<pre><code>## [&#39;b&#39;, &#39;i&#39;, &#39;e&#39;]</code></pre>
+<pre class="python"><code>list2[::2] #every other element</code></pre>
+<pre><code>## [&#39;a&#39;, &#39;b&#39;, &#39;e&#39;]</code></pre>
+<pre class="python"><code>list1[3] = 99 #how to assign positions in a list
+list1</code></pre>
+<pre><code>## [6, 7, 8, 99]</code></pre>
+<pre class="python"><code>list1.insert(4,100)
+list1</code></pre>
+<pre><code>## [6, 7, 8, 99, 100]</code></pre>
+<p>#Other functions:</p>
+<pre class="python"><code>list1.append(200) #adds this number to the end
+
+list1.sort() #orders from least to greatest
+list1</code></pre>
+<pre><code>## [6, 7, 8, 99, 100, 200]</code></pre>
+<pre class="python"><code>list1.reverse() #reverses the order
+list1</code></pre>
+<pre><code>## [200, 100, 99, 8, 7, 6]</code></pre>
+<pre class="python"><code>list3 = list1 + list2 #combines both of the lists
+list3</code></pre>
+<pre><code>## [200, 100, 99, 8, 7, 6, &#39;a&#39;, &#39;b&#39;, &#39;b&#39;, &#39;i&#39;, &#39;e&#39;]</code></pre>
+<pre class="python"><code>list3[7]</code></pre>
+<pre><code>## &#39;b&#39;</code></pre>
+<pre class="python"><code>list4=[list1,list2] #nest the functions
+list4</code></pre>
+<pre><code>## [[200, 100, 99, 8, 7, 6], [&#39;a&#39;, &#39;b&#39;, &#39;b&#39;, &#39;i&#39;, &#39;e&#39;]]</code></pre>
+<pre class="python"><code>list4[1] #gives all of list 2</code></pre>
+<pre><code>## [&#39;a&#39;, &#39;b&#39;, &#39;b&#39;, &#39;i&#39;, &#39;e&#39;]</code></pre>
+<p>#In python, arithmetic is not vecotrized by default.</p>
+<pre class="python"><code>for i in list1:
+    print(i+1)
+    </code></pre>
+<pre><code>## 201
+## 101
+## 100
+## 9
+## 8
+## 7</code></pre>
+<pre class="python"><code>for i in range(len(list1)):
+    print(list1[i]+1)</code></pre>
+<pre><code>## 201
+## 101
+## 100
+## 9
+## 8
+## 7</code></pre>
+<p>#How to save your output:</p>
+<pre class="python"><code>plus1 = [] #makes empty list
+for i in range(len(list1)):
+    plus1.append(list1[i]+1)
+plus1</code></pre>
+<pre><code>## [201, 101, 100, 9, 8, 7]</code></pre>
+<p>#Special functions! Numpy uses arrays:</p>
+<pre class="python"><code>import numpy as np
+
+x = np.array([1,2,3])
+x</code></pre>
+<pre><code>## array([1, 2, 3])</code></pre>
+<pre class="python"><code>print(x/2+1) #how to do math with arrays</code></pre>
+<pre><code>## [1.5 2.  2.5]</code></pre>
+<pre class="python"><code>x.shape #gives the size of the array
+
+#we can also make a matrix</code></pre>
+<pre><code>## (3,)</code></pre>
+<pre class="python"><code>mat1= np.array([[1,2], [3,4]])
+mat1</code></pre>
+<pre><code>## array([[1, 2],
+##        [3, 4]])</code></pre>
+<pre class="python"><code>mat1[0,0] #first element in mat1</code></pre>
+<pre><code>## 1</code></pre>
+<pre class="python"><code>mat1[:,0] #gives the first column</code></pre>
+<pre><code>## array([1, 3])</code></pre>
+<pre class="python"><code>print(np.sum(mat1)) #sums up all elements</code></pre>
+<pre><code>## 10</code></pre>
+<pre class="python"><code>mat1.T #transpose
+</code></pre>
+<pre><code>## array([[1, 3],
+##        [2, 4]])</code></pre>
+<pre class="python"><code>iden = np.eye(2)
+iden</code></pre>
+<pre><code>## array([[1., 0.],
+##        [0., 1.]])</code></pre>
+<pre class="python"><code>print(np.dot(iden, mat1)) #how to matrix multiply</code></pre>
+<pre><code>## [[1. 2.]
+##  [3. 4.]]</code></pre>
+<pre class="python"><code>print(iden*mat1) #scalar multiplication</code></pre>
+<pre><code>## [[1. 0.]
+##  [0. 4.]]</code></pre>
+<p>#How to save output:</p>
+<pre class="python"><code>plus1 = [] #makes empty list
+for i in range(len(list1)):
+    plus1.append(list1[i]+1)
+plus1</code></pre>
+<pre><code>## [201, 101, 100, 9, 8, 7]</code></pre>
+<p>#This is just a small list of everything that I have learned how to do in python! Please enjoy this picture of my puppy niece, Molly!</p>
+<p><img src="https://edupod.cns.utexas.edu/rstudio/files/website/static/img/molly.jpg" /></p>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../../../../js/docs.min.js"></script>
+<script src="../../../../../js/main.js"></script>
+
+<script src="../../../../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

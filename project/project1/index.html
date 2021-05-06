@@ -60,7 +60,7 @@
  
 <div class="blog-title">
           <h4>
-         December 1, 2020 
+         January 1, 0001 
             &nbsp;&nbsp;
             
           </h4>
@@ -70,10 +70,363 @@
           <div class="panel-body">
             <div class="blogpost">
               
+<script src="../../rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="../../rmarkdown-libs/plotly-binding/plotly.js"></script>
+<script src="../../rmarkdown-libs/typedarray/typedarray.min.js"></script>
+<script src="../../rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="../../rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="../../rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+<link href="../../rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="../../rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
 
 
-<div id="test-project-1" class="section level2">
-<h2>Test Project 1</h2>
+<p>Abigail Weber amw4996</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>One of the data sets I am using in this project is called Texas Child Population by County from 2010-2020. The data frame contains the year, county, region, child population, percent of children in the total population, and the total population. The other data set I selected portrays the number of COVID cases per Texas county from March 4, 2020 until December 30, 2020. I chose to look at COVID data because I am passionate about public health and healthcare. I thought it would be interesting to see if there was a trend or any correlation between how many COVID cases a Texas county had and the proportion of kids in that county. I suspect that bigger counties will have greater COVID cases.</p>
+</div>
+<div id="tidying" class="section level2">
+<h2>Tidying</h2>
+<pre class="r"><code>library(tidyverse)
+
+child_pop &lt;- read_csv(&quot;Texas.Child.Population.csv&quot;)
+covid_cases &lt;- read_csv(&quot;COVID_Cases.csv&quot;)
+covid_cases &lt;- covid_cases %&gt;% rename(County = County1, Latitude = `Latitude (generated)`, 
+    Longitude = `Longitude (generated)`)
+child_pop_noNA &lt;- na.omit(child_pop)
+child_pop_sep_noNA &lt;- child_pop_noNA %&gt;% separate(Region, into = c(&quot;Region_Number&quot;, 
+    &quot;Region&quot;), sep = &quot;-&quot;, convert = TRUE)
+covid_cases_noNA &lt;- na.omit(covid_cases) %&gt;% select(-Latitude) %&gt;% 
+    select(-Longitude)
+
+child_pop_wider &lt;- child_pop_noNA %&gt;% pivot_wider(names_from = &quot;Region&quot;, 
+    values_from = &quot;County&quot;)
+retidy &lt;- child_pop_wider %&gt;% pivot_longer(5:15, names_to = &quot;Region&quot;, 
+    values_to = &quot;County&quot;) %&gt;% na.omit()</code></pre>
+<p>The COVID_cases data set was found already tidy. The child_pop data set was not completely tidy. Under the region column, there was a numeric indicator of the region, and a character description of what the region is. In order to make this dataset tidy, the Region column needed to be split. I used the separate function to do this. At this point, both of these data sets are tidy and they both contain no NAs. Because I did not have to use pivot_wider and pivot_longer, I untidied child_pop and retidied it back. Lastly, in order to make the joining easier, I removed all NAs. There were only NAs in the child_pop data set. The NAs that were removed were fine because there were only NAs at the end of each year under “All Counties” and “All Regions”. We were just using 2020, so it was okay for this variable to be dropped. None of the NAs removed in the child_pop data set were in 2020, so that data is still safe for the rest of the project.</p>
+</div>
+<div id="joiningmerging" class="section level2">
+<h2>Joining/Merging</h2>
+<pre class="r"><code>child_pop_sep_noNA &lt;- child_pop_sep_noNA %&gt;% filter(Year == 2020)
+covid_cases_noNA = replace(covid_cases_noNA, covid_cases_noNA == 
+    &quot;Mcculloch&quot;, &quot;McCulloch&quot;)
+covid_cases_noNA = replace(covid_cases_noNA, covid_cases_noNA == 
+    &quot;Mclennan&quot;, &quot;McLennan&quot;)
+covid_cases_noNA = replace(covid_cases_noNA, covid_cases_noNA == 
+    &quot;Mcmullen&quot;, &quot;McMullen&quot;)
+covid_cases_noNA = replace(covid_cases_noNA, covid_cases_noNA == 
+    &quot;De Witt&quot;, &quot;DeWitt&quot;)
+joined_data &lt;- full_join(child_pop_sep_noNA, covid_cases_noNA, 
+    by = &quot;County&quot;)</code></pre>
+<p>Before doing the full_join, I filtered the child_pop data set to reflect values only from 2020. I did this because we only had COVID data for the year 2020. As such, child data from years prior to 2020 would not be meaningful to this join. In addition, before the full_join, I noticed that some of the spellings of counties in covid_cases did not match the spellings of counties in child_pop. Therefore, I had to change some of the spellings of counties in covid_cases to match child_pop. After this, I was ready to perform a full_join. I did a full_join because I wanted to preserve all of the categories from both data sets in order to perform summary statistics. Doing any other join would not result in a lot of columns overall because the two data sets only have one common variable. Because I had already filtered down the child_pop data set to only include 2020, no cases were dropped. It makes sense for the joined data set to have 254 observations because there are 254 counties in Texas.</p>
+</div>
+<div id="wrangling" class="section level2">
+<h2>Wrangling</h2>
+<pre class="r"><code>joined_data &lt;- joined_data %&gt;% mutate(percent_of_children = (`Child Population`/`Total Population`) * 
+    100)
+joined_data &lt;- joined_data %&gt;% mutate(percent_covid_cases = round((`New Cases`/`Total Population`) * 
+    100, digits = 0))
+view(joined_data)
+joined_data %&gt;% filter(County == &quot;Burnet&quot;)</code></pre>
+<pre><code>## # A tibble: 1 x 10
+##    Year County Region_Number Region `Child Populati… `% of Children …
+##   &lt;dbl&gt; &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;             &lt;dbl&gt;            &lt;dbl&gt;
+## 1  2020 Burnet             7 Austin            10343               21
+## # … with 4 more variables: `Total Population` &lt;dbl&gt;, `New Cases` &lt;dbl&gt;,
+## #   percent_of_children &lt;dbl&gt;, percent_covid_cases &lt;dbl&gt;</code></pre>
+<pre class="r"><code>joined_data %&gt;% select(County, `New Cases`) %&gt;% arrange(desc(`New Cases`))</code></pre>
+<pre><code>## # A tibble: 254 x 2
+##    County    `New Cases`
+##    &lt;chr&gt;           &lt;dbl&gt;
+##  1 Harris         295043
+##  2 Dallas         233569
+##  3 Tarrant        204809
+##  4 Bexar          150225
+##  5 El Paso        113017
+##  6 Travis          75617
+##  7 Collin          68279
+##  8 Hidalgo         65011
+##  9 Fort Bend       49937
+## 10 Denton          48806
+## # … with 244 more rows</code></pre>
+<pre class="r"><code>joined_data %&gt;% group_by(Region) %&gt;% arrange(desc(Region_Number))</code></pre>
+<pre><code>## # A tibble: 254 x 10
+## # Groups:   Region [11]
+##     Year County Region_Number Region `Child Populati… `% of Children …
+##    &lt;dbl&gt; &lt;chr&gt;          &lt;int&gt; &lt;chr&gt;             &lt;dbl&gt;            &lt;dbl&gt;
+##  1  2020 Arans…            11 Edinb…             5226               19
+##  2  2020 Bee               11 Edinb…             7568               22
+##  3  2020 Brooks            11 Edinb…             1836               26
+##  4  2020 Camer…            11 Edinb…           124912               29
+##  5  2020 Duval             11 Edinb…             3077               26
+##  6  2020 Hidal…            11 Edinb…           258163               30
+##  7  2020 Jim H…            11 Edinb…             1477               29
+##  8  2020 Jim W…            11 Edinb…            12078               28
+##  9  2020 Kenedy            11 Edinb…              101               21
+## 10  2020 Klebe…            11 Edinb…             6964               22
+## # … with 244 more rows, and 4 more variables: `Total Population` &lt;dbl&gt;, `New
+## #   Cases` &lt;dbl&gt;, percent_of_children &lt;dbl&gt;, percent_covid_cases &lt;dbl&gt;</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(mean(`Total Population`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `mean(\`Total Population\`)`
+##                          &lt;dbl&gt;
+## 1                      116841.</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(sd(`Total Population`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `sd(\`Total Population\`)`
+##                        &lt;dbl&gt;
+## 1                    426552.</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(var(`Total Population`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `var(\`Total Population\`)`
+##                         &lt;dbl&gt;
+## 1               181946545420.</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(quantile(`Total Population`))</code></pre>
+<pre><code>## # A tibble: 5 x 1
+##   `quantile(\`Total Population\`)`
+##                              &lt;dbl&gt;
+## 1                              92 
+## 2                            6854.
+## 3                           18956.
+## 4                           51824.
+## 5                         4978845</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(min(`Total Population`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `min(\`Total Population\`)`
+##                         &lt;dbl&gt;
+## 1                          92</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(max(`Total Population`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `max(\`Total Population\`)`
+##                         &lt;dbl&gt;
+## 1                     4978845</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(mean(`Child Population`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `mean(\`Child Population\`)`
+##                          &lt;dbl&gt;
+## 1                       29587.</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(sd(`Child Population`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `sd(\`Child Population\`)`
+##                        &lt;dbl&gt;
+## 1                    112083.</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(mean(percent_of_children))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `mean(percent_of_children)`
+##                         &lt;dbl&gt;
+## 1                        23.3</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(mean(percent_covid_cases))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `mean(percent_covid_cases)`
+##                         &lt;dbl&gt;
+## 1                        6.47</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(n_distinct(`Total Population`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `n_distinct(\`Total Population\`)`
+##                                &lt;int&gt;
+## 1                                253</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(mean(`New Cases`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `mean(\`New Cases\`)`
+##                   &lt;dbl&gt;
+## 1                 8533.</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(sd(`New Cases`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `sd(\`New Cases\`)`
+##                 &lt;dbl&gt;
+## 1              30500.</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(quantile(`New Cases`))</code></pre>
+<pre><code>## # A tibble: 5 x 1
+##   `quantile(\`New Cases\`)`
+##                       &lt;dbl&gt;
+## 1                        0 
+## 2                      382.
+## 3                     1214.
+## 4                     3170.
+## 5                   295043</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(min(`New Cases`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `min(\`New Cases\`)`
+##                  &lt;dbl&gt;
+## 1                    0</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(max(`New Cases`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `max(\`New Cases\`)`
+##                  &lt;dbl&gt;
+## 1               295043</code></pre>
+<pre class="r"><code>joined_data %&gt;% group_by(Region) %&gt;% summarize(sd(`Child Population`))</code></pre>
+<pre><code>## # A tibble: 11 x 2
+##    Region      `sd(\`Child Population\`)`
+##    &lt;chr&gt;                            &lt;dbl&gt;
+##  1 Abilene                          7755.
+##  2 Arlington                      200596.
+##  3 Austin                          59204.
+##  4 Beaumont                        14911.
+##  5 Edinburg                        65320.
+##  6 El Paso                         98530.
+##  7 Houston                        360525.
+##  8 Lubbock                         13076.
+##  9 Midland                         13871.
+## 10 San Antonio                     99594.
+## 11 Tyler                           12253.</code></pre>
+<pre class="r"><code>joined_data %&gt;% group_by(Region) %&gt;% summarize(mean(`New Cases`))</code></pre>
+<pre><code>## # A tibble: 11 x 2
+##    Region      `mean(\`New Cases\`)`
+##    &lt;chr&gt;                       &lt;dbl&gt;
+##  1 Abilene                     1389.
+##  2 Arlington                  34527.
+##  3 Austin                      7605.
+##  4 Beaumont                    2555.
+##  5 Edinburg                   10331.
+##  6 El Paso                    19183.
+##  7 Houston                    35819.
+##  8 Lubbock                     2672.
+##  9 Midland                     1430.
+## 10 San Antonio                 7816.
+## 11 Tyler                       2390.</code></pre>
+<pre class="r"><code>joined_data %&gt;% group_by(Region, County) %&gt;% summarize(mean(`New Cases`))</code></pre>
+<pre><code>## # A tibble: 254 x 3
+## # Groups:   Region [11]
+##    Region  County   `mean(\`New Cases\`)`
+##    &lt;chr&gt;   &lt;chr&gt;                    &lt;dbl&gt;
+##  1 Abilene Archer                     545
+##  2 Abilene Baylor                     111
+##  3 Abilene Brown                     1917
+##  4 Abilene Callahan                   484
+##  5 Abilene Clay                       721
+##  6 Abilene Coleman                    353
+##  7 Abilene Comanche                   926
+##  8 Abilene Cottle                     120
+##  9 Abilene Eastland                   751
+## 10 Abilene Fisher                     290
+## # … with 244 more rows</code></pre>
+<pre class="r"><code>joined_data %&gt;% filter(Region == &quot;Beaumont&quot;) %&gt;% summarize(sum(`Total Population`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `sum(\`Total Population\`)`
+##                         &lt;dbl&gt;
+## 1                      785117</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(min(percent_of_children))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `min(percent_of_children)`
+##                        &lt;dbl&gt;
+## 1                       13.8</code></pre>
+<pre class="r"><code>joined_data %&gt;% summarize(max(percent_of_children))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `max(percent_of_children)`
+##                        &lt;dbl&gt;
+## 1                       33.2</code></pre>
+<p>To use the mutate function, I decided to verify the Percent of Children in the population by calculating it myself. From what I saw, the column existing in the original child_pop data set was pretty rounded. I used the filter function to look specifically at the county of my hometown, Burnet County. I saw that in Burnet County, children make up about 21.46% of the total population and we had a little shy of 3,000 of COVID cases from March 4, 2020 until December 30, 2020. Next, I used the select function to look at both Counties and COVID cases in combination with arrange in order to see which county had the most COVID cases in 2020. Harris County had the most with 295,043 cases. For the next line, I used the group_by function to group the data set by Region Number, Region, and County. Then, I arranged by descending Region_Number. I saw that the last region number was 11 and it codes for Edinburg. When I did the next few summarize functions, I obtains some interesting data about the state of Texas as a whole. The mean total population of Texas is 116841.2, the sd is 426551.9, the var is 181946545420, the quantiles were 92.00, 6853.50, 18955.50, 51823.75, and 4978845.0. The minimum population of an entire county in Texas was 92, the max of a county in Texas 4978845. Lastly, there were 253 distinct observations in the total population over all the counties in Texas. I did the same summarize functions to the New Cases Column and obtained useful data for the amount of COVID cases in Texas over 2020. Next, I grouped by region and found that the region with the region with the most COVID cases was Houston, followed closely by Arlington, followed more distantly by El Paso. Simarily, the region with the most children was Houston, Arlington, followed by San Antonio.</p>
+</div>
+<div id="visualizing" class="section level2">
+<h2>Visualizing</h2>
+<pre class="r"><code>cormat_joined &lt;- joined_data %&gt;% select(-1, -3, -6) %&gt;% select_if(is.numeric) %&gt;% 
+    cor(use = &quot;pair&quot;)
+
+tidycor_joined &lt;- cormat_joined %&gt;% as.data.frame %&gt;% rownames_to_column(&quot;var1&quot;) %&gt;% 
+    pivot_longer(-1, names_to = &quot;var2&quot;, values_to = &quot;correlation&quot;)
+tidycor_joined</code></pre>
+<pre><code>## # A tibble: 25 x 3
+##    var1             var2                correlation
+##    &lt;chr&gt;            &lt;chr&gt;                     &lt;dbl&gt;
+##  1 Child Population Child Population         1     
+##  2 Child Population Total Population         0.999 
+##  3 Child Population New Cases                0.972 
+##  4 Child Population percent_of_children      0.169 
+##  5 Child Population percent_covid_cases      0.0844
+##  6 Total Population Child Population         0.999 
+##  7 Total Population Total Population         1     
+##  8 Total Population New Cases                0.972 
+##  9 Total Population percent_of_children      0.160 
+## 10 Total Population percent_covid_cases      0.0818
+## # … with 15 more rows</code></pre>
+<pre class="r"><code># heatmap
+tidycor_joined %&gt;% ggplot(aes(var1, var2, fill = correlation)) + 
+    geom_tile() + scale_fill_gradient2(low = &quot;red&quot;, mid = &quot;white&quot;, 
+    high = &quot;sky blue&quot;) + geom_text(aes(label = round(correlation, 
+    2)), color = &quot;black&quot;, size = 4) + coord_fixed() + theme(axis.text.x = element_text(angle = 90, 
+    hjust = 1)) + ggtitle(&quot;Correlation Heatmap&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># graph 1
+region_pop &lt;- joined_data %&gt;% group_by(Region) %&gt;% summarize(sum(`Total Population`)) %&gt;% 
+    rename(Total_Pop = &quot;sum(`Total Population`)&quot;)
+ggplot(region_pop, aes(x = Region, y = Total_Pop, fill = Region)) + 
+    geom_bar(stat = &quot;summary&quot;) + scale_y_continuous(breaks = seq(from = 0, 
+    to = 9e+06, by = 1e+06)) + ggtitle(&quot;Total Population per Region&quot;) + 
+    ylab(&quot;Total Population&quot;) + xlab(&quot;Region&quot;) + coord_flip()</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># graph 2
+ggplot(joined_data, aes(x = `Total Population`, y = `New Cases`)) + 
+    geom_point(aes(size = `Total Population`, color = Region)) + 
+    geom_smooth(method = &quot;lm&quot;, se = F) + ggtitle(&quot;New Cases vs Total Population&quot;) + 
+    ylab(&quot;New COVID Cases&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-4-3.png" width="672" style="display: block; margin: auto;" />
+The first plot is a correlation heat map. There is a strong correlation between Total Population and New COVID cases. This correlation is predictable because the more people a county has, the more opportunities there are for COVID to spread. Additionally, presumably because total population and child population have a correlation, Child Population and New COVID cases also have a correlation. This finding is predictable because Total Population and Child Population have a correlation of 1. This strong correlation could be due to the fact that the percentage of children are about the same for each county, scaling from 13-33%. Therefore when the total population increases for a county, the child population will naturally increase as well.</p>
+<p>The second graph is a bar graph depicting the total population per region. I wanted to see which region had the highest population as well as the relative distribution between regions. From the graph, we can conclude that in this data set, the largest region was Arlington, followed closely by Houston. AFter Houston, the next largest region is Austin. However the gap between 2nd and 3rd largest is big. This graph will allow us to predict where more COVID cases will be.</p>
+<p>The last plot is a scatter plot graph showing the Total Population vs New COVID Cases. The line of best fit on the graph shows us how well the data fits to a straight line. This line fits the data pretty well, meaning the correlation is very close to 1. From this graph, we can conclude that COVID does not spread faster in cities because the biggest county, Harris County, on the far upper right part of the graph is below the line of best fit, while some of the smaller counties on the lower left part of the plot are greater than the line of best fit.</p>
+<pre class="r"><code>joined_data_clust &lt;- joined_data %&gt;% select(-County) %&gt;% select(-Year) %&gt;% 
+    select(-Region) %&gt;% select(-`% of Children in Total Population`) %&gt;% 
+    select(-Region_Number) %&gt;% select(-percent_of_children) %&gt;% 
+    select(-percent_covid_cases) %&gt;% scale
+
+library(cluster)
+pam &lt;- joined_data_clust %&gt;% pam(k = 2)
+pam</code></pre>
+<pre><code>## Medoids:
+##       ID Child Population Total Population  New Cases
+## [1,] 198       -0.2310702       -0.2343284 -0.2422745
+## [2,]  43        2.0407479        2.1627561  1.9588843
+## Clustering vector:
+##   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+##  [38] 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 2 1 1 1 1 1 1 1 2 1 1 1 1
+##  [75] 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 154 entries ]
+## Objective function:
+##     build      swap 
+## 0.3109860 0.3109017 
+## 
+## Available components:
+##  [1] &quot;medoids&quot;    &quot;id.med&quot;     &quot;clustering&quot; &quot;objective&quot;  &quot;isolation&quot; 
+##  [6] &quot;clusinfo&quot;   &quot;silinfo&quot;    &quot;diss&quot;       &quot;call&quot;       &quot;data&quot;</code></pre>
+<pre class="r"><code>table(pam$clustering)[1]</code></pre>
+<pre><code>##   1 
+## 242</code></pre>
+<pre class="r"><code>pam$clustering[1]</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>sil_width &lt;- vector()
+for (i in 2:10) {
+    pam_fit &lt;- pam(joined_data_clust, k = i)
+    sil_width[i] &lt;- pam_fit$silinfo$avg.width
+}
+ggplot() + geom_line(aes(x = 1:10, y = sil_width)) + scale_x_continuous(name = &quot;k&quot;, 
+    breaks = 1:10)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pam$silinfo$avg.width</code></pre>
+<pre><code>## [1] 0.9122732</code></pre>
+<pre class="r"><code>plot(pam, which = 2)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pamclust3 &lt;- joined_data_clust %&gt;% as.data.frame %&gt;% mutate(cluster = as.factor(pam$clustering))
+
+pamclust3 %&gt;% ggplot(aes(`New Cases`, `Child Population`, color = cluster)) + 
+    geom_point()</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-5-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pamclust3 %&gt;% group_by(cluster) %&gt;% summarize_if(is.numeric, 
+    mean, na.rm = T)</code></pre>
+<pre><code>## # A tibble: 2 x 4
+##   cluster `Child Population` `Total Population` `New Cases`
+##   &lt;fct&gt;                &lt;dbl&gt;              &lt;dbl&gt;       &lt;dbl&gt;
+## 1 1                   -0.168             -0.170      -0.172
+## 2 2                    3.38               3.43        3.47</code></pre>
+<pre class="r"><code>library(plotly)
+pamclust3 %&gt;% plot_ly(x = ~`Total Population`, y = ~`New Cases`, 
+    z = ~`Child Population`, color = ~cluster, type = &quot;scatter3d&quot;, 
+    mode = &quot;markers&quot;, symbol = ~cluster, symbols = c(&quot;circle&quot;, 
+        &quot;o&quot;))</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"11e0d1f8e8438":["function () ","plotlyVisDat"]},"cur_data":"11e0d1f8e8438","attrs":{"11e0d1f8e8438":{"x":{},"y":{},"z":{},"mode":"markers","color":{},"symbol":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"symbols":["circle","o"],"type":"scatter3d"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"`Total Population`"},"yaxis":{"title":"`New Cases`"},"zaxis":{"title":"`Child Population`"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":[-0.137479657338013,-0.22171324726036,-0.0619015200734262,-0.208983261363384,-0.254358745163746,-0.269353402584935,-0.152408672106327,-0.202646400980414,-0.255887281223567,-0.224111548470784,-0.0720573762254887,-0.26542422093423,-0.193168070781248,0.555120661914946,-0.246950502910626,-0.272314355105724,-0.232272336851516,-0.0569009565525699,0.607259683341971,0.26390406557306,-0.252509028980926,-0.270244267159678,-0.257099325921309,-0.182669935082047,-0.232382522733129,-0.160930495077875,-0.170101711436801,-0.220374606017786,-0.242374272253002,0.729195599819596,-0.242688419234622,-0.26032519343406,-0.202822229514903,-0.257268121314418,-0.174706074659943,-0.151595172086759,-0.257364240913271,-0.250975804160185,-0.266071269941148,-0.266383072542308,-0.254044598182126,-0.266394794444607,-0.224048250198368,0.0714773174287185,-0.243267481208204,-0.264198109953729,-0.180785053192329,-0.0903154112467866,-0.270380241226349,-0.259363997445522,-0.264448958662933,-0.258766180428261,-0.26865712158836,-0.256953974332798,-0.242055436510463,-0.222960457664999,-0.231386161037693,-0.261337965792714,-0.26882357260101,-0.246390195980722,-0.265925918352637,-0.24626594381635,-0.231240809449183,0.159417372858085,-0.269252594225162,0.142725383983966,-0.176567512745062,-0.23499650694586,-0.192811724951351,-0.212764747045119,-0.264577899588224,-0.260355670380038,-0.271013223950508,-0.248310243577338,-0.227360859788134,-0.226978725773179,-0.222060215568417,0.558794306095528,-0.258015978681109,-0.212518587096835,-0.270720176393027,-0.255828671712071,-0.22387476604434,-0.217064340808481,0.0348580946458894,0.020838699495997,-0.206097329017311,0.125248027655797,-0.196082135692839,-0.266172078300921,-0.254649448340767,-0.260275961444403,-0.264847503341107,-0.141495581065733,-0.113923322477458,-0.25969689947082,-0.25939213001104,0.276765336775788,-0.263032952865184,-0.083605794370701,-0.190289171576554,-0.216164098711899,-0.13643875241384,-0.187084403487942,-0.220890369718953,-0.177247383078418,-0.265949362157236,-0.050444532766148,-0.223607506671917,-0.270384929987268,-0.253193588075201,-0.236646950789593,-0.190636139884612,-0.26896657980906,0.332519392871898,-0.26201783612607,-0.173369777797829,0.12861221361568,-0.227653907345615,-0.237833207302276,0.0194414487419275,-0.165427016799864,-0.272804330621832,-0.27205647325514,-0.151386522225833,-0.263736267003139,-0.273195842158627,-0.265804010568725,-0.201274938411403,-0.264690429850297,-0.254440798479841,-0.156668411401871,-0.243968450965699,-0.224601523986893,-0.225309526885767,-0.23267088152969,-0.232408310918187,-0.0739821125830241,-0.218724162174053,-0.265360922661814,-0.245717358788746,-0.228317367015752,-0.273704572718414,0.469740669947734,-0.260819857711088,-0.239863440780505,-0.249787203267042,-0.259750820221397,-0.264779516307771,-0.187028138356905,-0.133402779718337,-0.253617920938434,0.31936272973123,-0.272084605820658,-0.155308670735159,-0.268790751274572,0.165332244758282,-0.216166443092359,-0.262503122881259,-0.250792942484317,-0.228910495272094,-0.223340247299494,-0.244737407756529,-0.271172641821777,-0.12363140196169,-0.161425159354903,-0.241745978289763,-0.237249456567774,0.625660725571319,-0.247407657100296,-0.268762618709054,-0.0719401572024963,-0.208608160489808,-0.21630476153949,0.0440269666243557,-0.252351955490116,-0.235160613578049,-0.158858062751369,0.013749292985416,-0.260074344724856,-0.247245894848567,0.0498480633061589,-0.264012903897401,-0.265932951494017,-0.244357618122034,-0.237097071837884,-0.256166262498289,-0.271615729728689,-0.234328358514803,-0.0342237643644581,-0.248110971238251,-0.150214331995909,-0.250626491471668,-0.254215737955695,-0.206298945736858,-0.106707319422045,-0.260151709280031,-0.266155667637702,-0.230858675434228,-0.265937640254936,-0.214033056873897,-0.266240065334257,0.27734439874937,-0.25213158372689,-0.122166164174285,-0.251484534719972,-0.27098509138499,-0.270349764280371,-0.263649524926125,-0.256539018991405,0.0530200100683335,-0.27144927871604,-0.243349534524299,-0.27035914180221,-0.196665886427341,0.0150855898475295,-0.2405526886357,-0.223884143566179,-0.176265087665742,-0.264582588349144,-0.20842529881394,-0.160796865391663,-0.143879815993399,-0.0447711320533153,-0.100443134833331,-0.15498749061216,-0.242055436510463,-0.191503560654755,0.373557772821541,-0.175594594854225,-0.260362703521417,0.0382058699425526,-0.243354223285219,-0.222029738622439,-0.152476659139662,-0.25212923934643,-0.119643610799488,-0.167738575933274,-0.25229334597862,-0.23005220855604,-0.240140077674767,-0.244188822728925],"y":[-0.12155258061517,-0.224241633229137,-0.128273926651525,-0.256209010719116,-0.261913958086559,-0.276700919366539,-0.184011918172516,-0.231782655611388,-0.261127068794498,-0.255881140180758,-0.124765711891086,-0.276143539451329,-0.187618494094462,0.393892692738649,-0.266307423300566,-0.279586180104097,-0.24624174635301,-0.134536253934178,0.620287299475379,0.286875749018347,-0.257586066980223,-0.277520595712436,-0.260602475933124,-0.216930120223736,-0.235717102071693,-0.186307011941027,-0.156503580004215,-0.237061371278964,-0.263913968370547,0.941174195367105,-0.254471296865815,-0.272766472906234,-0.24401222669217,-0.260209031287093,-0.140733007109158,-0.206962855857629,-0.237913834678697,-0.256143436611445,-0.272766472906234,-0.273323852821444,-0.268209072423047,-0.275356650159268,-0.24043843782406,-0.12266734044559,-0.24942209057509,-0.272110731829517,-0.18755291998679,-0.127224740928777,-0.275848455966807,-0.274799270244059,-0.275487798374612,-0.269946786276349,-0.269651702791826,-0.261127068794498,-0.223717040367762,-0.219225213992247,-0.222077687675969,-0.274209103275013,-0.276635345258868,-0.241881068192838,-0.274077955059669,-0.246176172245338,-0.255159824996368,-0.00384705734437256,-0.27502877962091,0.267695322524359,-0.198274286591122,-0.233585943572361,-0.203159557612668,-0.244766328930395,-0.270274656814708,-0.269356619307303,-0.277782892143123,-0.265717256331521,-0.257717215195567,-0.227192468074365,-0.233487582410854,0.679140061110777,-0.272897621121578,-0.239487613262819,-0.278438633219841,-0.271454990752799,-0.215684212177973,-0.223848188583106,0.0733336673852815,-0.0863720718492745,-0.206503837103927,-0.0513554983525581,-0.0819458195814311,-0.269913999222513,-0.260241818340929,-0.26755333134633,-0.273979593898162,-0.200471019198126,-0.204700549142954,-0.266766442054269,-0.274635334974879,0.264646126517623,-0.263782820155204,-0.158142932696009,-0.194372627184653,-0.216700610846885,-0.150437975044578,-0.231061340426999,-0.252208990151139,-0.185454548541294,-0.26738939607715,-0.107486934519579,-0.247520441452609,-0.27860256848902,-0.264602496501101,-0.238438427540071,-0.249749961113449,-0.275520585428448,0.30681027775056,-0.262110680409574,-0.17817582258973,0.185924410257682,-0.214864535832076,-0.235946611448545,0.102153487707017,-0.241454836492972,-0.279389457781081,-0.2787665037582,-0.221848178299117,-0.274176316221177,-0.279618967157932,-0.271487777806635,-0.230602321673297,-0.274209103275013,-0.254307361596636,-0.155388820173795,-0.232110526149747,-0.236733500740606,-0.232274461418926,-0.256602455365147,-0.251520462020586,-0.115257466278682,-0.227913783258755,-0.271356629591291,-0.251586036128258,-0.252438499527991,-0.279782902427112,1.29881537860885,-0.259881160748735,-0.243913865530663,-0.268832026445929,-0.268733665284421,-0.27184843539883,-0.199126749990855,0.0538909444606065,-0.266569719731253,0.54068033276187,-0.27804518857381,-0.189093911517077,-0.275323863105433,0.252547703652184,-0.23614333377156,-0.263848394262876,-0.260602475933124,-0.231061340426999,-0.21801209300032,-0.261651661655872,-0.278700929650528,-0.178536480181924,-0.170110207346104,-0.270602527353066,-0.230766256942476,0.581401853626029,-0.250045044597972,-0.27653698409736,-0.154142912128032,-0.207126791126809,-0.249127007090567,0.0768418821457203,-0.253323749981559,-0.239454826208983,-0.234340045810587,0.27277731586892,-0.26047132771778,-0.267192673754135,0.251105073283406,-0.275225501943925,-0.272209092991024,-0.267127099646463,-0.251127017374556,-0.262864782647799,-0.278241910896826,-0.242274512838869,-0.0118470984803265,-0.257389344657208,-0.211880913933011,-0.27430746443652,-0.269094322876616,-0.256143436611445,-0.178798776612611,-0.264799218824116,-0.276307474720509,-0.168929873408012,-0.276209113559001,-0.251618823182094,-0.27558615953612,0.0796615687756057,-0.26325822729383,-0.0539128885517565,-0.267422183130986,-0.278176336789154,-0.278438633219841,-0.271258268429784,-0.267258247861807,-0.0501095903067947,-0.278012401519974,-0.224831800198182,-0.278536994381348,-0.193848034323279,-0.129946066397155,-0.264471348285757,-0.262864782647799,-0.239258103885968,-0.278077975627646,-0.170798735476657,-0.0283717736136084,-0.198307073644958,-0.0230274838383605,-0.013847108764315,-0.18492995567992,-0.260209031287093,-0.214897322885912,1.11973249055729,-0.175093839529157,-0.265848404546864,0.19779332374627,-0.248504053067685,-0.215979295662496,-0.203651363420206,-0.262536912109441,-0.106667258173682,-0.218339963538679,-0.251520462020586,-0.224143272067629,-0.23240560963427,-0.233815452949213],"z":[-0.167920754784635,-0.202850115177264,-0.0581453141024108,-0.217348253271268,-0.248806982452471,-0.260958652658029,-0.14434901272657,-0.202073907168539,-0.243230775493239,-0.233354197727047,-0.0783267223292632,-0.256756423093552,-0.196453090553634,0.652209920916936,-0.245104381031541,-0.262966087163353,-0.230802525422503,-0.0891222590023363,0.576319974684572,0.185485859394786,-0.245818135522322,-0.261199544798668,-0.247593599818142,-0.188441196394609,-0.228473901396327,-0.171694731654644,-0.166100680833142,-0.213253086880408,-0.240946761122737,0.850481996524955,-0.234496204912298,-0.252224082077088,-0.204277624158828,-0.246737094429204,-0.166841201117328,-0.146383213025298,-0.251412186343824,-0.246888767258495,-0.25525753866291,-0.258576497045045,-0.246585421599913,-0.256399545848161,-0.219757174677656,0.0272286449262146,-0.237565349222659,-0.258870920772493,-0.183855323791337,-0.0883728167870155,-0.261208466729803,-0.248137837617363,-0.254989880728867,-0.249065718455379,-0.259923708646396,-0.243864232603808,-0.234826316364284,-0.221827062700923,-0.214983941520553,-0.253954936717234,-0.26111032548732,-0.232925945032578,-0.257960883796746,-0.236521483279891,-0.227590630213985,0.223502207960046,-0.260369805203134,0.13637062849787,-0.184337108072614,-0.234264234702794,-0.201806249234496,-0.212111079695157,-0.256560140608587,-0.251046387167298,-0.261797314184698,-0.239421110898692,-0.224798065768802,-0.222389144362413,-0.1985229785769,0.501759396191289,-0.251483561792902,-0.219230780740704,-0.261306607972285,-0.250350476538786,-0.213895465922111,-0.210014425878486,0.00934909493213319,0.0204479772637885,-0.20712372019082,0.112094053880158,-0.183275398267576,-0.257059768752134,-0.247673897198355,-0.249315532527153,-0.255569806252627,-0.152369828816729,-0.108848648741315,-0.253339323468935,-0.252884304981061,0.206844962531428,-0.25078765116439,-0.112801064234019,-0.188664244672978,-0.205767586658335,-0.159489529862277,-0.186933390032833,-0.223629292790147,-0.178743057251113,-0.257550474964547,-0.0686731928414407,-0.216331153121904,-0.261645641355407,-0.24689768918963,-0.227037470483629,-0.190073909792272,-0.261065715831646,0.275204798886045,-0.250796573095525,-0.156215181135816,0.125164682992598,-0.235049364642654,-0.234192859253716,0.0178695391658397,-0.172078374693439,-0.26307315033697,-0.262644897642501,-0.171712575516913,-0.256836720473765,-0.263510324962574,-0.257639694275894,-0.201841936959035,-0.255150475489293,-0.249253079009209,-0.16286201983122,-0.234638955810454,-0.223852341068516,-0.219088029842548,-0.226332637923982,-0.228696949674697,-0.0761408492012442,-0.217615911205311,-0.255882073842344,-0.242106612170258,-0.235950479687266,-0.263849358345695,0.406830048917324,-0.25196534607418,-0.235013676918115,-0.246701406704665,-0.248976499144031,-0.25722036351256,-0.183079115782612,-0.10455719986549,-0.24689768918963,0.309830813620092,-0.262876867852005,-0.161425588918522,-0.260209210442708,0.203998866499436,-0.211317027824162,-0.254793598243902,-0.247183190985942,-0.226127433507882,-0.20768580185231,-0.2392694380694,-0.262056050187606,-0.144036745136853,-0.161398823125118,-0.240589883877347,-0.227938585528241,0.587793578123888,-0.234050108355559,-0.258969062014975,-0.0880516272661637,-0.208809965175292,-0.210835243542885,0.013488870978667,-0.241214419056781,-0.228099180288667,-0.179215919601256,0.010410804737171,-0.251215903858859,-0.24437278267849,0.0325104281579992,-0.253410698918013,-0.257898430278803,-0.240955683053872,-0.233496948625203,-0.248708841209988,-0.262002518600797,-0.231070183356546,-0.0470464317707554,-0.240991370778411,-0.162719268933064,-0.247629287542681,-0.24944043956304,-0.207007735086068,-0.100542330854843,-0.253455308573687,-0.256577984470857,-0.222746021607804,-0.257131144201212,-0.204572047886275,-0.256346014261352,0.246413727114138,-0.246371295252678,-0.0861601778655923,-0.244622596750263,-0.261663485217676,-0.261217388660938,-0.255096943902484,-0.248164603410767,0.0417535488136221,-0.262118503705549,-0.233104383655274,-0.261199544798668,-0.182677628881547,-0.0130538741472772,-0.240331147874438,-0.226305872130578,-0.182427814809773,-0.254579471896668,-0.201877624683574,-0.143438975750823,-0.152762393786659,-0.0574672473361681,-0.147123733309484,-0.16112224325994,-0.228688027743562,-0.195266473712709,0.463832266937377,-0.169375029559603,-0.250850104682333,-0.000875438148314576,-0.237404754462233,-0.215626320562257,-0.161925217062069,-0.238377244955923,-0.131438978374556,-0.184006996620628,-0.238047133503937,-0.224753456113128,-0.222790631263478,-0.229116280438031],"mode":"markers","type":"scatter3d","name":"1","marker":{"color":"rgba(102,194,165,1)","symbol":"circle","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"frame":null},{"x":[4.63404492573245,2.16275611845126,6.13587614773536,1.83122321134137,1.7800383527615,1.69625722826791,11.3983866748923,1.76654878759554,1.16541447198355,4.7518570769812,2.75385179693418,1.10906259887018],"y":[4.64565226006748,1.95888434643272,7.3782564749648,1.32042204708669,3.42571156094218,1.35750420497507,9.39380782247149,1.85173625449708,0.880288636393882,6.43530080664498,2.19947574748038,0.832681834224189],"z":[4.49714290923998,2.04074790728364,6.23134327356113,1.61837476543244,1.89812191616319,1.61679558362159,11.6086714658679,2.03933824216435,1.09821725834415,4.56495850779537,2.29978725585059,1.05038678553064],"mode":"markers","type":"scatter3d","name":"2","marker":{"color":"rgba(141,160,203,1)","symbol":"circle-open","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>library(GGally)
+ggpairs(pamclust3, aes(color = cluster))</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-5-5.png" width="672" style="display: block; margin: auto;" />
+Using silhouette width, I determined that the best number of clusters is 2. This is because at k = 2, the highest sil_width was observed. I made a silhouette width plot to see what kind of structure was found. Based on getting an average silhouette width of 0.912, I can say that a strong structure has been found. The Silhouette plot does not show up very well on the chunk, but if you isolate the plot into a different window, you can see it better. From this, we can see that the first cluster makes up almost all of data set while cluster 2 makes up very little of the data set. The data was separated into two clusters. Cluster 1 is made up of almost all of the counties in Texas. Since cluster 1 has a smaller median in total population, child population, and COVID cases, we can conclude that cluster 1 is made up of all of the smaller counties in Texas and we can also say that there are a lot of smaller counties in Texas. Cluster 2, on the other hand, is made up of the remaining counties, which are large. These counties have a higher total population, higher number of COVID cases, and a higher population of children. There are fewer massive counties in Texas. Before I did the 3D plot, I wanted to try out a plot with 2 variables, New Cases and Child Population. I saw that cluster 1 had low cases of COVID and a smaller child population while cluster 2 had a larger child population and more COVID cases. This confirms what we would suspect given what we have seen throughout the project.</p>
 </div>
 
             

@@ -1,0 +1,156 @@
+---
+title: "Learning Python"
+author: "Abbie Weber"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_depth: '3'
+    df_print: paged
+  html_notebook:
+    devtools::install_github('rstudio/rmarkdown')
+---
+
+# This is a blog of everything I learned about python in computational biology.
+
+#Python and R can work together!
+```{R}
+library(reticulate)
+
+hi <- "Hello,"
+```
+#Reticulate allows for R and Python to work together. We will see how below. 
+
+```{python}
+hi = "my name is Abbie!"
+print(r.hi, hi)
+```
+
+#We can also use python to do simple math.
+```{python}
+3-2
+3**2 #3 squared
+pow(3,2) #3 to the power of 2
+
+3//2 #floor division
+3/2
+```
+
+#This is how assignment works in python:
+```{python}
+eight = 8
+nine = 9
+two = 2
+eight*nine
+#multiple assignment works like this:
+one, ten = nine-8, eight+two
+one
+ten
+```
+
+#Here is how we can build a sequence:
+```{python}
+x = list(range(2, 10, 1))
+len(x)
+max(x)
+min(x)
+type(x) #tells us what x is -- it's a list
+```
+
+#This is how you can index in python:
+```{python}
+list1 = [6,7,8,9]
+list2 = ['a', 'b', 'b', 'i', 'e']
+list2[1] #python recognizes the 0th position. So, in list2, the first position is b and the 0th position is a.
+list1[3]
+list2[-1] #this asks to give the last element because -0 = 0. SO negative indexes start at 1.
+```
+
+#Slicing: We are slicing between elements.
+```{python}
+list1 = [6,7,8,9]
+list2 = ['a', 'b', 'b', 'i', 'e']
+
+list2[1:] #gives elements after index 1
+list2[1:4] #elements from index 1 to and not including 4
+list2[-3:] #lists third from end to the end
+list2[::2] #every other element
+list1[3] = 99 #how to assign positions in a list
+list1
+list1.insert(4,100)
+list1
+```
+
+#Other functions:
+```{python}
+list1.append(200) #adds this number to the end
+
+list1.sort() #orders from least to greatest
+list1
+
+list1.reverse() #reverses the order
+list1
+
+list3 = list1 + list2 #combines both of the lists
+list3
+list3[7]
+
+list4=[list1,list2] #nest the functions
+list4
+list4[1] #gives all of list 2
+```
+
+#In python, arithmetic is not vecotrized by default.
+```{python}
+for i in list1:
+    print(i+1)
+    
+for i in range(len(list1)):
+    print(list1[i]+1)
+```
+
+
+#How to save your output:
+```{python}
+plus1 = [] #makes empty list
+for i in range(len(list1)):
+    plus1.append(list1[i]+1)
+plus1
+```
+
+#Special functions! Numpy uses arrays:
+```{python}
+import numpy as np
+
+x = np.array([1,2,3])
+x
+
+print(x/2+1) #how to do math with arrays
+x.shape #gives the size of the array
+
+#we can also make a matrix
+mat1= np.array([[1,2], [3,4]])
+mat1
+mat1[0,0] #first element in mat1
+mat1[:,0] #gives the first column
+print(np.sum(mat1)) #sums up all elements
+mat1.T #transpose
+
+
+iden = np.eye(2)
+iden
+print(np.dot(iden, mat1)) #how to matrix multiply
+print(iden*mat1) #scalar multiplication
+```
+
+#How to save output:
+```{python}
+plus1 = [] #makes empty list
+for i in range(len(list1)):
+    plus1.append(list1[i]+1)
+plus1
+```
+#This is just a small list of everything that I have learned how to do in python! Please enjoy this picture of my puppy niece, Molly!
+
+
+![](https://edupod.cns.utexas.edu/rstudio/files/website/static/img/molly.jpg)
